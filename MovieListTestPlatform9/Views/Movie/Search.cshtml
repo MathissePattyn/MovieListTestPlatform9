@@ -1,0 +1,101 @@
+﻿@model MovieListTestPlatform9.ViewModels.MovieSearchVM
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h1>Zoek een film</h1>
+
+<form asp-action="Search" method="post">
+    <input type="text" asp-for="zoekterm" placeholder="Typ de naam van een film"/>
+    <button type="submit">Zoeken</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.zoekterm))
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+
+@if (Model.Movies.Any())
+{
+    <h2>Resultaten:</h2>
+     <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Poster</th>
+                <th>Titel</th>
+                <th>Jaar</th>
+                <th>Acteurs</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in Model.Movies)
+            {
+                var inList = Model.SavedMovies.Any(m => m.Id == movie.Id);
+                <tr>
+                    <td><img src="@movie.PosterUrl" alt="@movie.Title" width="100" /></td>
+                    <td>@movie.Title</td>
+                    <td>@movie.Year</td>
+                    <td>@movie.Actors</td>
+                    <td>
+                        @if (!inList)
+                        {
+                            <form asp-action="AddToList" method="post" style="display:inline;">
+                                <input type="hidden" name="Id" value="@movie.Id" />
+                                <input type="hidden" name="Title" value="@movie.Title" />
+                                <input type="hidden" name="Year" value="@movie.Year" />
+                                <input type="hidden" name="Actors" value="@movie.Actors" />
+                                <input type="hidden" name="PosterUrl" value="@movie.PosterUrl" />
+                                <input type="hidden" name="zoekterm" value="@Model.zoekterm" />
+                                <button type="submit">Toevoegen aan lijst</button>
+                            </form>
+                        } else
+                        {
+                            <form asp-action="Remove" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@movie.Id" />
+                                <input type="hidden" name="zoekterm" value="@Model.zoekterm" />
+                                <input type="hidden" name="returnUrl" value="@Url.Action("Search", new { zoekterm = Model.zoekterm })" />
+                                <button type="submit">Remove</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+     </table>
+    @* <ul>
+        @foreach (var movie in Model.Movies)
+        {
+            var InList = Model.SavedMovies.Any(m => m.Id == movie.Id);
+
+            <li>
+                <strong>@movie.Title</strong> (@movie.Year)
+                <br/>
+                <img src="@movie.PosterUrl" alt="@movie.Title" width="100"/>
+
+                @if (!InList)
+                {
+                    <form asp-action="AddToList" method="post" style="display:inline;">
+                        <input type="hidden" name="Id" value="@movie.Id" />
+                        <input type="hidden" name="Title" value="@movie.Title" />
+                        <input type="hidden" name="Year" value="@movie.Year" />
+                        <input type="hidden" name="Actors" value="@movie.Actors" />
+                        <input type="hidden" name="PosterUrl" value="@movie.PosterUrl" />
+                        <input type="hidden" name="zoekterm" value="@Model.zoekterm" />
+                        <button type="submit">Toevoegen aan lijst</button>
+                    </form>
+                } else
+                {
+                    <form asp-action="Remove" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" value="@movie.Id" />
+                        <input type="hidden" name="zoekterm" value="@Model.zoekterm" />
+                        <input type="hidden" name="returnUrl" value="@Url.Action("Search", new { zoekterm = Model.zoekterm })" />
+                        <button type="submit">Remove</button>
+                    </form>
+                }
+            </li>
+        }
+    </ul> *@
+}
