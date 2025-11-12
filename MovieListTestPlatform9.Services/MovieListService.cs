@@ -46,5 +46,12 @@ namespace MovieListTestPlatform9.Services
                 await _dataService.SaveDataAsync();
             }
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _db.SaveChangesAsync();
+            await _dataService.SaveDataAsync(); // indien je JSON gebruikt
+        }
+
     }
 }

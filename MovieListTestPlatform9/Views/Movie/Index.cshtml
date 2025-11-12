@@ -4,8 +4,24 @@
 *@
 @{
 }
+@{
+    var filterRating = Context.Request.Query["filterRating"].ToString();
+}
+
 
 <h1>Mijn films</h1>
+
+<!-- Filter Form -->
+<form method="get" asp-action="Index" class="mb-3">
+    <label for="filterRating">Filter op rating:</label>
+    <select id="filterRating" name="filterRating" onchange="this.form.submit()">
+        <option value="">--Alles--</option>
+        <option value="Goed" selected="@(filterRating == "Goed")">Goed</option>
+        <option value="Gemiddeld" selected="@(filterRating == "Gemiddeld")">Gemiddeld</option>
+        <option value="Slecht" selected="@(filterRating == "Slecht")">Slecht</option>
+
+    </select>
+</form>
 
 @if (!Model.Any())
 {
@@ -26,16 +42,25 @@
             @foreach (var movie in Model)
             {
                 <tr>
-                    <td><img = src="@movie.PosterUrl" alt="@movie.Title" width="100" /></td>
+                    <td><img src="@movie.PosterUrl" alt="@movie.Title" width="100" /></td>
                     <td>@movie.Title</td>
                     <td>@movie.Year</td>
                     <td>@movie.Actors</td>
                     <td>
                         <form asp-action="Remove" method="post" style="display:inline;">
-                            @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@movie.Id" />
                             <input type="hidden" name="returnUrl" value="@Url.Action("Index")" />
                             <button type="submit">Verwijderen</button>
+                        </form>
+
+                        <form asp-action="UpdateRating" method="post">
+                            <input type="hidden" name="Id" value="@movie.Id" />
+                            <select name="Rating" onchange="this.form.submit()">
+                                <option value="">--Kies--</option>
+                                <option value="Goed" selected="@(movie.Rating == "Goed" ? "selected" : null)">Goed</option>
+                                <option value="Gemiddeld" selected="@(movie.Rating == "Gemiddeld" ? "selected" : null)">Gemiddeld</option>
+                                <option value="Slecht" selected="@(movie.Rating == "Slecht" ? "selected" : null)">Slecht</option>
+                            </select>
                         </form>
                     </td>
                 </tr>

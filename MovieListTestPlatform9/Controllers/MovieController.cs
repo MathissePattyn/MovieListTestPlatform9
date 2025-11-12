@@ -17,9 +17,15 @@ namespace MovieListTestPlatform9.Controllers
             _MovieListService = movieListService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(String? filterRating)
         {
             var movies = await _MovieListService.GetAllMoviesAsync();
+            if (!String.IsNullOrEmpty(filterRating))
+            {
+                movies = movies.Where(m => m.Rating == filterRating).ToList();
+            }
+            
+
             return View(movies);
         }
 
@@ -75,7 +81,7 @@ namespace MovieListTestPlatform9.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Remove(String id, String zoekterm)
         {
             if (id != null)
@@ -93,6 +99,18 @@ namespace MovieListTestPlatform9.Controllers
             return Redirect("Index");
         }
 
-        
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> UpdateRating(String id, string rating)
+        {
+            var movie = await _MovieListService.GetAllMoviesAsync();
+            var m = movie.FirstOrDefault(m => m.Id == id);
+            if (m != null)
+            {
+                m.Rating = rating;
+                await _MovieListService.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

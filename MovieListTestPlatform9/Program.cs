@@ -1,46 +1,47 @@
+﻿using Microsoft.EntityFrameworkCore;
 using MovieListTestPlatform9.Domains.Data;
 using MovieListTestPlatform9.Services;
 using MovieListTestPlatform9.Services.Interfaces;
-using Microsoft.EntityFrameworkCore; 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Voeg MVC services toe (Controllers + Views)
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<MovieDbContext>(options => 
+// Gebruik je bestaande DbContext, hier met InMemoryDatabase
+builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseInMemoryDatabase("MovieListDb"));
 
+// Voeg je services toe
 builder.Services.AddTransient<IMovieService, MovieService>();
 builder.Services.AddTransient<IDataPersistanceService, DataPersistanceService>();
 builder.Services.AddScoped<IMovieListService, MovieListService>();
 
 var app = builder.Build();
 
+// Laad dummy data
 using (var scope = app.Services.CreateScope())
 {
     var dataService = scope.ServiceProvider.GetRequiredService<IDataPersistanceService>();
     await dataService.LoadDataAsync();
 }
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 
-app.UseAuthorization();
-
-app.MapStaticAssets();
+// Geen authentication/authorization meer
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Movie}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Movie}/{action=Index}/{id?}");
 
 app.Run();

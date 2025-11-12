@@ -12,5 +12,7 @@ namespace MovieListTestPlatform9.Services.Interfaces
         Task AddMovieAsync(Movie movie);
         Task RemoveMovieAsync(Movie movie);
         Task<List<Movie>> GetAllMoviesAsync();
+
+        Task SaveChangesAsync();
     }
 }

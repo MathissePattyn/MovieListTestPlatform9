@@ -1,47 +1,46 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace MovieListTestPlatform9.Services.Integrations.MovieSearchAPI.DTO
 {
     public class MovieSearchDTO
     {
-        [JsonProperty("ok")] public Boolean IsOk { get; set; }
-        [JsonProperty("description")] public List<MovieItem> MovieItems { get; set; }
+        [JsonProperty("ok")]
+        public bool IsOk { get; set; }
+
+        [JsonProperty("description")]
+        public List<MovieItem> MovieItems { get; set; } = new List<MovieItem>();
     }
 
     public class MovieItem
     {
         [JsonProperty("#TITLE")]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [JsonProperty("#YEAR")]
         public int Year { get; set; }
 
         [JsonProperty("#IMDB_ID")]
-        public string ImdbId { get; set; }
+        public string ImdbId { get; set; } = string.Empty;
 
         [JsonProperty("#RANK")]
         public int Rank { get; set; }
 
         [JsonProperty("#ACTORS")]
-        public string Actors { get; set; }
+        public string Actors { get; set; } = string.Empty;
 
         [JsonProperty("#AKA")]
-        public string AlsoKnownAs { get; set; }
+        public string AlsoKnownAs { get; set; } = string.Empty;
 
         [JsonProperty("#IMDB_URL")]
-        public string ImdbUrl { get; set; }
+        public string ImdbUrl { get; set; } = string.Empty;
 
         [JsonProperty("#IMDB_IV")]
-        public string ImdbIvUrl { get; set; }
+        public string ImdbIvUrl { get; set; } = string.Empty;
 
         [JsonProperty("#IMG_POSTER")]
-        public string PosterUrl { get; set; }
+        public string PosterUrl { get; set; } = string.Empty;
 
         [JsonProperty("photo_width")]
         public int PhotoWidth { get; set; }
