@@ -1,15 +1,27 @@
+using MovieListTestPlatform9.Domains.Data;
 using MovieListTestPlatform9.Services;
 using MovieListTestPlatform9.Services.Interfaces;
+using Microsoft.EntityFrameworkCore; 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<MovieDbContext>(options => 
+    options.UseInMemoryDatabase("MovieListDb"));
+
 builder.Services.AddTransient<IMovieService, MovieService>();
-builder.Services.AddSingleton<IMovieListService, MovieListService>();
+builder.Services.AddTransient<IDataPersistanceService, DataPersistanceService>();
+builder.Services.AddScoped<IMovieListService, MovieListService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dataService = scope.ServiceProvider.GetRequiredService<IDataPersistanceService>();
+    await dataService.LoadDataAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -30,6 +42,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Movie}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

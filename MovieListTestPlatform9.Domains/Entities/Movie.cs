@@ -11,10 +11,10 @@ namespace MovieListTestPlatform9.Domains.Entities
         public String Id { get; set; }
         public String Title { get; set; }
         public int Year { get; set; }
-        public String Actors { get; set; }
-        public string PosterUrl { get; set; }
+        public String? Actors { get; set; }
+        public string? PosterUrl { get; set; }
 
         // Extra interne velden die jij wil gebruiken
-        public bool IsWatched { get; set; } = false;
+        public bool? IsWatched { get; set; } = false;
     }
 }

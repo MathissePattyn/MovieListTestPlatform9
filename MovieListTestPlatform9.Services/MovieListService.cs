@@ -1,4 +1,6 @@
-﻿using MovieListTestPlatform9.Domains.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MovieListTestPlatform9.Domains.Data;
+using MovieListTestPlatform9.Domains.Entities;
 using MovieListTestPlatform9.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,26 +12,39 @@ namespace MovieListTestPlatform9.Services
 {
     public class MovieListService : IMovieListService
     {
-        private readonly List<Movie> _MovieList = new();
+        private readonly MovieDbContext _db;
+        private readonly IDataPersistanceService _dataService;
+
+        public MovieListService(MovieDbContext db, IDataPersistanceService dataService)
+        {
+            _db = db;
+            _dataService = dataService;
+        }
         
-        public Task AddMovieAsync(Movie movie)
+        public async Task AddMovieAsync(Movie movie)
         {
-            if(!_MovieList.Any(m => m.Id == movie.Id))
+            if(!await _db.Movies.AnyAsync(m => m.Id == movie.Id))
             {
-                _MovieList.Add(movie);
+                _db.Movies.Add(movie);
+                await _db.SaveChangesAsync();
+                await _dataService.SaveDataAsync();
             }
-            return Task.CompletedTask;
         }
 
-        public Task<List<Movie>> GetAllMoviesAsync()
+        public async Task<List<Movie>> GetAllMoviesAsync()
         {
-            return Task.FromResult(_MovieList.ToList());
+            return await _db.Movies.ToListAsync();
         }
 
-        public Task RemoveMovieAsync(Movie movie)
+        public async Task RemoveMovieAsync(Movie movie)
         {
-            _MovieList.RemoveAll(m => m.Id == movie.Id);
-            return Task.CompletedTask;
+            var existing = await _db.Movies.FirstOrDefaultAsync(m => m.Id == movie.Id);
+            if (existing != null)
+            {
+                _db.Movies.Remove(existing);
+                await _db.SaveChangesAsync();
+                await _dataService.SaveDataAsync();
+            }
         }
     }
 }
